@@ -1,41 +1,30 @@
-<!DOCTYPE html>
-<html lang="ru">
-    <head>
-        <meta charset="UTF-8">
-        <title>Вход</title>
-        <!-- подключаем бутстрап -->
-        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
-    </head>
-    <body>
-        <!-- создаём контейнер -->
-        <div class="container">
-            <div class="row">
-                <!-- указываем стиль адаптивной вёрстки -->
-                <div class="col-md-12">
-                    <!-- пишем заголовок и пояснительный текст -->
-                    <h2>Вход</h2>
-                    <p>Введите свою почту и пароль.</p>
-                    <!-- метод, которым будем работать с формой — отправлять на сервер -->
-                    <form action="" method="post">
-                        <!-- поле ввода электронной почты -->
-                        <div class="form-group">
-                            <label>Электронная почта</label>
-                            <input type="email" name="email" class="form-control" required />
-                        </div>    
-                        <!-- поле ввода пароля -->
-                        <div class="form-group">
-                            <label>Пароль</label>
-                            <input type="password" name="password" class="form-control" required>
-                        </div>
-                        <!-- кнопка отправки данных на сервер -->
-                        <div class="form-group">
-                            <a href="success" class="btn btn-primary btn-lg active" role="button" aria-pressed="true">Войти</a>
-                        </div>
-                        <!-- ссылка для тех, у кого ещё нет аккаунта -->
-                        <p>Нет аккаунта? <a href="registration">Создайте его за минуту</a>.</p>
-                    </form>
-                </div>
-            </div>
-        </div>    
-    </body>
-</html>
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Авторизация</h1>
+<form action="" method="post" novalidate>
+    {{ form.hidden_tag() }}
+    <p>
+        {{ form.nickname.label }}<br>
+        {{ form.nickname(class="form-control") }}<br>
+        {% for error in form.nickname.errors %}
+    <div class="alert alert-danger" role="alert">
+        {{ error }}
+    </div>
+    {% endfor %}
+    </p>
+    <p>
+        {{ form.password.label }}<br>
+        {{ form.password(class="form-control", type="password") }}<br>
+        {% for error in form.password.errors %}
+    <div class="alert alert-danger" role="alert">
+        {{ error }}
+    </div>
+    {% endfor %}
+    </p>
+    <p>{{ form.remember_me() }} {{ form.remember_me.label }}</p>
+    <p>{{ form.submit(type="submit", class="btn btn-primary") }}</p>
+
+    {{message}}
+</form>
+{% endblock %}
