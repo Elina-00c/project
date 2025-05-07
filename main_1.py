@@ -1,12 +1,39 @@
 from flask import Flask, render_template, redirect
 from forms.Loginform import LoginForm
 from forms.RegisterForm import RegisterForm
+from forms.OfficeForm import OfficeForm
+from forms.FindForm import FindForm
 from data.users import User
+from data.products import Product
 from data import db_session
+import sys
+import requests
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
-db_session.global_init('db/users.sqlite')
+db_session.global_init('db/shops.sqlite')
+db_sess = db_session.create_session()
+for i in db_sess.query(Product).filter(Product.name == 'Book'):
+    print(i.id)
+
+
+def map_image():
+    map_request = "http://static-maps.yandex.ru/1.x/?ll=37.681281,55.677089&spn=0.01,0.01&size=600,450&l=map&pt=37.681281,55.677089,pm2pnm~37.681281,55.677089,pm2pnm"
+    response = requests.get(map_request)
+
+    if not response:
+        print("Ошибка выполнения запроса:")
+        print(map_request)
+        print("Http статус:", response.status_code, "(", response.reason, ")")
+        sys.exit(1)
+
+    # Запишем полученное изображение в файл.
+    map_file = "static/img/map.png"
+    with open(map_file, "wb") as file:
+        file.write(response.content)
+
+
+map_image()
 
 
 @app.route('/')
@@ -68,6 +95,49 @@ def login1():
 @app.route('/success')
 def main():
     return render_template('shop.html', title='Домашняя страница')
+
+
+@app.route("/office", methods=['GET', 'POST'])
+def my_office():
+    """
+    Обработка страницы профиля
+    :return: страничка user
+    """
+    form = OfficeForm()
+    if form.validate_on_submit():
+        form.nickname.data = "Scott"
+        form.name.data = "name"
+        form.email.data = "email"
+        form.password.data = "password"
+        return redirect('/office')
+    return render_template('office.html', title='Ваш аккаунт', form=form)
+
+
+@app.route('/find', methods=['GET', 'POST'])
+def find():
+    form = FindForm()
+    if form.validate_on_submit():
+        db_sess = db_session.create_session()
+        products_db = db_sess.query(Product).all()
+        names = [product.name for product in products_db]
+        prices = [product.price for product in products_db]
+        providers = [product.provider for product in products_db]
+        types = [product.type for product in products_db]
+        if db_sess.query(Product).filter(Product.name == form.find.data).first():
+            result = []
+            id = []
+            for i in db_sess.query(Product).filter(Product.name == form.find.data):
+                id.append(i.id)
+            for index in id:
+                stroka = (f"Название: {names[index - 1]}, Цена: {prices[index - 1]}, Поставщик: {providers[index - 1]}, "
+                          f"Тип продукта: {types[index - 1]}")
+                result.append(stroka)
+            return render_template('find.html', title='Поиск товаров',
+                                   form=form, news=result)
+
+        return redirect('/success')
+
+    return render_template('find.html', title='Поиск товаров', form=form)
 
 
 if __name__ == '__main__':

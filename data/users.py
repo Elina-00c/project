@@ -9,5 +9,6 @@ class User(SqlAlchemyBase):
                            primary_key=True, autoincrement=True)
     nickname = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     name = sqlalchemy.Column(sqlalchemy.String, nullable=True)
-    email = sqlalchemy.Column(sqlalchemy.Integer, nullable=True)
+    age = sqlalchemy.Column(sqlalchemy.Integer, nullable=True)
+    email = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     password = sqlalchemy.Column(sqlalchemy.String, nullable=True)
