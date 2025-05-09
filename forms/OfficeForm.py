@@ -7,4 +7,4 @@ class OfficeForm(FlaskForm):
     nickname = StringField('Никнейм', validators=[DataRequired()])
     name = StringField('Ваше имя', validators=[DataRequired()])
     email = StringField('Ваша почта', validators=[DataRequired()])
-    password = PasswordField('Пароль', validators=[DataRequired()])
+    password = StringField('Пароль', validators=[DataRequired()])
